@@ -1,6 +1,4 @@
-# Warcraft
-
-- [ТЗ](http://dcrmng.guo.local/projects/umndvor/wiki/Интерфейс_для_распределения_МКД)
+# Laravel + React + Mysql + PhpMyAdmin
 
 ## Локальный запуск
 где `${CONTAINER_NAME}` - название контейнера
