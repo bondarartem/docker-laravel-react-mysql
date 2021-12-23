@@ -1,0 +1,79 @@
+version: '3.7'
+services:
+
+    frontend:
+      container_name: ${CONTAINER_NAME}-front
+      build:
+        context: ./frontend
+      restart: unless-stopped
+      hostname: ${CONTAINER_NAME}
+      domainname: local
+      volumes:
+        - ./frontend/src:/app
+      environment:
+        HOST: ${CONTAINER_NAME}
+      ports:
+        - "80:80"
+      networks:
+        - app-network
+
+    backend:
+      container_name: ${CONTAINER_NAME}-back
+      build:
+        context: ./backend/
+      restart: unless-stopped
+      hostname: ${CONTAINER_NAME}
+      extra_hosts:
+        - "api.regenergy.ru:46.229.223.212"
+      domainname: local
+      environment:
+        MYSQL_HOST: ${CONTAINER_NAME}-mysql
+        MYSQL_PORT: 3306
+      env_file:
+        - .env
+      working_dir: /var/www/html
+      volumes:
+        - ./backend/src:/var/www/html
+        - ./backend/config/local.env:/var/www/html/.env
+      ports:
+        - "8000:80"
+      networks:
+        - app-network
+        - db
+      cap_add:
+        - NET_ADMIN
+
+    appdb:
+      container_name: ${CONTAINER_NAME}-mysql
+      image: mysql:5.7
+      restart: unless-stopped
+      env_file:
+        - .env
+      volumes:
+        - ./mysql:/docker-entrypoint-initdb.d
+        - ./mysql/data:/var/lib/mysql
+      ports:
+        - 3306:3306
+      networks:
+        - db
+
+    phpmyadmin:
+      container_name: ${CONTAINER_NAME}-pma
+      image: phpmyadmin/phpmyadmin
+      restart: unless-stopped
+      hostname: ${CONTAINER_NAME}
+      domainname: local
+      environment:
+        PMA_HOST: appdb
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      depends_on:
+        - appdb
+      ports:
+        - 8443:80
+      networks:
+        - db
+
+networks:
+  app-network:
+    driver: bridge
+  db:

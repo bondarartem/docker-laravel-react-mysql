@@ -1,0 +1,7 @@
+FROM node:13.10.1-alpine
+WORKDIR /app
+
+COPY ./config/service/ /service/
+RUN chmod -R 777 /service
+
+CMD ["/service/start.sh"]
