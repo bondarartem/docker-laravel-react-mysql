@@ -23,8 +23,6 @@ services:
         context: ./backend/
       restart: unless-stopped
       hostname: ${CONTAINER_NAME}
-      extra_hosts:
-        - "api.regenergy.ru:46.229.223.212"
       domainname: local
       environment:
         MYSQL_HOST: ${CONTAINER_NAME}-mysql
